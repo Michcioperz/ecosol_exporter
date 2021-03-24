@@ -14,7 +14,7 @@ import (
 var (
 	addr   = flag.String("listen-address", ":8080", "The address to listen on for HTTP requests.")
 	ecosol = flag.String("ecosol.address", "http://admin:admin@192.168.2.9/econet/regParams", "The address to econet's metrics endpoint including credentials")
-	loop = flag.Duration("ecosol.probe-period", time.Minute, "how often to probe the endpoint")
+	loop   = flag.Duration("ecosol.probe-period", time.Minute, "how often to probe the endpoint")
 )
 
 var (
@@ -41,7 +41,6 @@ func main() {
 			resp, err := client.Get(*ecosol)
 			if err == nil {
 				var params RegParams
-				defer resp.Body.Close()
 				dec := json.NewDecoder(resp.Body)
 				err = dec.Decode(&params)
 				if err == nil {
@@ -53,6 +52,7 @@ func main() {
 				} else {
 					log.Print(err)
 				}
+				resp.Body.Close()
 			} else {
 				log.Print(err)
 			}
